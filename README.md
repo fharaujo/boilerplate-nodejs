@@ -60,7 +60,7 @@ src/
 
 1. **Clone the repository**
    ```bash
-   git clone <repository-url>
+   git clone git@gitlab.com:boilerplate-mfalzetta/boilerplate-nodejs.git
    cd boilerplate
    ```
 

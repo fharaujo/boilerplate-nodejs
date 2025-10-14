@@ -1,19 +1,19 @@
 import { Injectable, OnModuleInit, OnModuleDestroy, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import * as amqp from 'amqplib';
+import { connect, Connection, Channel } from 'amqplib';
 
 @Injectable()
 export class RabbitMQService implements OnModuleInit, OnModuleDestroy {
   private readonly logger = new Logger(RabbitMQService.name);
-  private connection: amqp.Connection;
-  private channel: amqp.Channel;
+  private connection: Connection;
+  private channel: Channel;
 
   constructor(private configService: ConfigService) {}
 
   async onModuleInit() {
     try {
       const url = this.configService.get('RABBITMQ_URL', 'amqp://localhost:5672');
-      this.connection = await amqp.connect(url);
+      this.connection = await connect(url);
       this.channel = await this.connection.createChannel();
 
       this.connection.on('error', (error) => {
@@ -77,7 +77,7 @@ export class RabbitMQService implements OnModuleInit, OnModuleDestroy {
     }
   }
 
-  getChannel(): amqp.Channel {
+  getChannel(): Channel {
     return this.channel;
   }
 }
