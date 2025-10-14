@@ -46,9 +46,6 @@ export class UserService {
         email: true,
         name: true,
         role: true,
-        isActive: true,
-        createdAt: true,
-        updatedAt: true,
       },
     });
   }
@@ -61,9 +58,6 @@ export class UserService {
         email: true,
         name: true,
         role: true,
-        isActive: true,
-        createdAt: true,
-        updatedAt: true,
       },
     });
 
@@ -95,9 +89,6 @@ export class UserService {
         email: true,
         name: true,
         role: true,
-        isActive: true,
-        createdAt: true,
-        updatedAt: true,
       },
     });
 
