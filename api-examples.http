@@ -1,0 +1,93 @@
+# NestJS Boilerplate API Examples
+# Use with REST Client extension in VS Code
+
+@baseUrl = http://localhost:3000/api/v1
+@accessToken = your-access-token-here
+@refreshToken = your-refresh-token-here
+
+### Health Check
+GET {{baseUrl}}/
+
+###
+# ========================================
+# Authentication
+# ========================================
+
+### Register a new user
+POST {{baseUrl}}/auth/register
+Content-Type: application/json
+
+{
+  "email": "test@example.com",
+  "password": "Password123!",
+  "name": "Test User"
+}
+
+### Login
+# @name login
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "test@example.com",
+  "password": "Password123!"
+}
+
+### Refresh Token
+POST {{baseUrl}}/auth/refresh
+Content-Type: application/json
+
+{
+  "refreshToken": "{{refreshToken}}"
+}
+
+### Logout
+POST {{baseUrl}}/auth/logout
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "refreshToken": "{{refreshToken}}"
+}
+
+###
+# ========================================
+# Users
+# ========================================
+
+### Get current user profile
+GET {{baseUrl}}/users/me
+Authorization: Bearer {{accessToken}}
+
+### Get all users (Admin only)
+GET {{baseUrl}}/users
+Authorization: Bearer {{accessToken}}
+
+### Get user by ID
+GET {{baseUrl}}/users/uuid-here
+Authorization: Bearer {{accessToken}}
+
+### Update user
+PATCH {{baseUrl}}/users/uuid-here
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "name": "Updated Name"
+}
+
+### Create user (Admin only)
+POST {{baseUrl}}/users
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "email": "newuser@example.com",
+  "password": "Password123!",
+  "name": "New User",
+  "role": "USER"
+}
+
+### Delete user (Admin only)
+DELETE {{baseUrl}}/users/uuid-here
+Authorization: Bearer {{accessToken}}

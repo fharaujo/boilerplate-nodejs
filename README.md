@@ -1,93 +1,369 @@
-# Boilerplate Nodejs
+# NestJS Boilerplate
 
+Modern, production-ready NestJS boilerplate with clean architecture, TypeScript, and best practices for building scalable REST APIs.
 
+## 🚀 Features
 
-## Getting started
+- **Modern Stack**: Node.js 20+, TypeScript, NestJS
+- **Clean Architecture**: Modular structure with separation of concerns
+- **Authentication**: JWT with refresh tokens
+- **Database**: Prisma ORM with PostgreSQL
+- **Caching**: Redis integration with ioredis
+- **Message Queue**: RabbitMQ support
+- **API Documentation**: Swagger/OpenAPI
+- **Security**: Helmet, CORS, Rate Limiting
+- **Validation**: class-validator for request validation
+- **Logging**: Pino logger with pretty printing
+- **Testing**: Jest with unit and e2e tests
+- **Code Quality**: ESLint, Prettier, Husky pre-commit hooks
+- **Containerization**: Docker and docker-compose
+- **CI/CD**: GitHub Actions workflow
 
-To make it easy for you to get started with GitLab, here's a list of recommended next steps.
-
-Already a pro? Just edit this README.md and make it your own. Want to make it easy? [Use the template at the bottom](#editing-this-readme)!
-
-## Add your files
-
-- [ ] [Create](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#create-a-file) or [upload](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#upload-a-file) files
-- [ ] [Add files using the command line](https://docs.gitlab.com/topics/git/add_files/#add-files-to-a-git-repository) or push an existing Git repository with the following command:
+## 📁 Project Structure
 
 ```
-cd existing_repo
-git remote add origin https://gitlab.com/boilerplate-mfalzetta/boilerplate-nodejs.git
-git branch -M main
-git push -uf origin main
+src/
+├── core/                    # Core functionality (filters, interceptors, guards)
+│   ├── filters/            # Exception filters
+│   ├── interceptors/       # Request/response interceptors
+│   └── core.module.ts
+├── infrastructure/          # External services and persistence
+│   ├── database/           # Prisma service
+│   ├── cache/              # Redis service
+│   ├── messaging/          # RabbitMQ service
+│   └── infrastructure.module.ts
+├── modules/                 # Feature modules
+│   ├── auth/               # Authentication module
+│   │   ├── dto/
+│   │   ├── guards/
+│   │   ├── strategies/
+│   │   └── decorators/
+│   └── user/               # User module
+│       ├── dto/
+│       └── user.service.ts
+├── app.module.ts           # Root module
+└── main.ts                 # Application entry point
 ```
 
-## Integrate with your tools
+## 🛠️ Prerequisites
 
-- [ ] [Set up project integrations](https://gitlab.com/boilerplate-mfalzetta/boilerplate-nodejs/-/settings/integrations)
+- Node.js >= 20.0.0
+- npm >= 9.0.0
+- PostgreSQL >= 14
+- Redis >= 7
+- RabbitMQ >= 3 (optional)
+- Docker & Docker Compose (for containerized setup)
 
-## Collaborate with your team
+## 🏃 Quick Start
 
-- [ ] [Invite team members and collaborators](https://docs.gitlab.com/ee/user/project/members/)
-- [ ] [Create a new merge request](https://docs.gitlab.com/ee/user/project/merge_requests/creating_merge_requests.html)
-- [ ] [Automatically close issues from merge requests](https://docs.gitlab.com/ee/user/project/issues/managing_issues.html#closing-issues-automatically)
-- [ ] [Enable merge request approvals](https://docs.gitlab.com/ee/user/project/merge_requests/approvals/)
-- [ ] [Set auto-merge](https://docs.gitlab.com/user/project/merge_requests/auto_merge/)
+### Local Development
 
-## Test and Deploy
+1. **Clone the repository**
+   ```bash
+   git clone <repository-url>
+   cd boilerplate
+   ```
 
-Use the built-in continuous integration in GitLab.
+2. **Install dependencies**
+   ```bash
+   npm install
+   ```
 
-- [ ] [Get started with GitLab CI/CD](https://docs.gitlab.com/ee/ci/quick_start/)
-- [ ] [Analyze your code for known vulnerabilities with Static Application Security Testing (SAST)](https://docs.gitlab.com/ee/user/application_security/sast/)
-- [ ] [Deploy to Kubernetes, Amazon EC2, or Amazon ECS using Auto Deploy](https://docs.gitlab.com/ee/topics/autodevops/requirements.html)
-- [ ] [Use pull-based deployments for improved Kubernetes management](https://docs.gitlab.com/ee/user/clusters/agent/)
-- [ ] [Set up protected environments](https://docs.gitlab.com/ee/ci/environments/protected_environments.html)
+3. **Setup environment variables**
+   ```bash
+   cp .env.example .env
+   ```
+   Edit `.env` with your configuration.
 
-***
+4. **Start infrastructure services**
+   ```bash
+   docker-compose up -d postgres redis rabbitmq
+   ```
 
-# Editing this README
+5. **Run database migrations**
+   ```bash
+   npm run migrate
+   ```
 
-When you're ready to make this README your own, just edit this file and use the handy template below (or feel free to structure it however you want - this is just a starting point!). Thanks to [makeareadme.com](https://www.makeareadme.com/) for this template.
+6. **Start development server**
+   ```bash
+   npm run dev
+   ```
 
-## Suggestions for a good README
+The API will be available at `http://localhost:3000/api/v1`
+Swagger documentation at `http://localhost:3000/docs`
 
-Every project is different, so consider which of these sections apply to yours. The sections used in the template are suggestions for most open source projects. Also keep in mind that while a README can be too long and detailed, too long is better than too short. If you think your README is too long, consider utilizing another form of documentation rather than cutting out information.
+### Using Docker Compose
 
-## Name
-Choose a self-explaining name for your project.
+1. **Start all services**
+   ```bash
+   docker-compose up -d
+   ```
 
-## Description
-Let people know what your project can do specifically. Provide context and add a link to any reference visitors might be unfamiliar with. A list of Features or a Background subsection can also be added here. If there are alternatives to your project, this is a good place to list differentiating factors.
+2. **View logs**
+   ```bash
+   docker-compose logs -f app
+   ```
 
-## Badges
-On some READMEs, you may see small images that convey metadata, such as whether or not all the tests are passing for the project. You can use Shields to add some to your README. Many services also have instructions for adding a badge.
+3. **Stop services**
+   ```bash
+   docker-compose down
+   ```
 
-## Visuals
-Depending on what you are making, it can be a good idea to include screenshots or even a video (you'll frequently see GIFs rather than actual videos). Tools like ttygif can help, but check out Asciinema for a more sophisticated method.
+## 📜 Available Scripts
 
-## Installation
-Within a particular ecosystem, there may be a common way of installing things, such as using Yarn, NuGet, or Homebrew. However, consider the possibility that whoever is reading your README is a novice and would like more guidance. Listing specific steps helps remove ambiguity and gets people to using your project as quickly as possible. If it only runs in a specific context like a particular programming language version or operating system or has dependencies that have to be installed manually, also add a Requirements subsection.
+| Script | Description |
+|--------|-------------|
+| `npm run dev` | Start development server with hot reload |
+| `npm run build` | Build production bundle |
+| `npm start` | Start production server |
+| `npm run lint` | Run ESLint |
+| `npm run format` | Format code with Prettier |
+| `npm test` | Run unit tests |
+| `npm run test:watch` | Run tests in watch mode |
+| `npm run test:cov` | Run tests with coverage |
+| `npm run test:e2e` | Run e2e tests |
+| `npm run migrate` | Run database migrations |
+| `npm run migrate:deploy` | Deploy migrations (production) |
+| `npm run prisma:studio` | Open Prisma Studio |
 
-## Usage
-Use examples liberally, and show the expected output if you can. It's helpful to have inline the smallest example of usage that you can demonstrate, while providing links to more sophisticated examples if they are too long to reasonably include in the README.
+## 🔐 Authentication
 
-## Support
-Tell people where they can go to for help. It can be any combination of an issue tracker, a chat room, an email address, etc.
+The boilerplate includes a complete JWT authentication system with refresh tokens.
 
-## Roadmap
-If you have ideas for releases in the future, it is a good idea to list them in the README.
+### Register a new user
+```bash
+POST /api/v1/auth/register
+Content-Type: application/json
 
-## Contributing
-State if you are open to contributions and what your requirements are for accepting them.
+{
+  "email": "user@example.com",
+  "password": "Password123!",
+  "name": "John Doe"
+}
+```
 
-For people who want to make changes to your project, it's helpful to have some documentation on how to get started. Perhaps there is a script that they should run or some environment variables that they need to set. Make these steps explicit. These instructions could also be useful to your future self.
+### Login
+```bash
+POST /api/v1/auth/login
+Content-Type: application/json
 
-You can also document commands to lint the code or run tests. These steps help to ensure high code quality and reduce the likelihood that the changes inadvertently break something. Having instructions for running tests is especially helpful if it requires external setup, such as starting a Selenium server for testing in a browser.
+{
+  "email": "user@example.com",
+  "password": "Password123!"
+}
+```
 
-## Authors and acknowledgment
-Show your appreciation to those who have contributed to the project.
+Response:
+```json
+{
+  "statusCode": 200,
+  "data": {
+    "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+    "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+    "user": {
+      "id": "uuid",
+      "email": "user@example.com",
+      "name": "John Doe",
+      "role": "USER"
+    }
+  }
+}
+```
 
-## License
-For open source projects, say how it is licensed.
+### Refresh tokens
+```bash
+POST /api/v1/auth/refresh
+Content-Type: application/json
 
-## Project status
-If you have run out of energy or time for your project, put a note at the top of the README saying that development has slowed down or stopped completely. Someone may choose to fork your project or volunteer to step in as a maintainer or owner, allowing your project to keep going. You can also make an explicit request for maintainers.
+{
+  "refreshToken": "your-refresh-token"
+}
+```
+
+### Protected routes
+Add the `Authorization` header with the access token:
+```bash
+GET /api/v1/users/me
+Authorization: Bearer your-access-token
+```
+
+## 🗄️ Database
+
+### Migrations
+
+```bash
+# Create a new migration
+npm run migrate
+
+# Apply migrations in production
+npm run migrate:deploy
+
+# Reset database (development only)
+npm run migrate:reset
+
+# Open Prisma Studio
+npm run prisma:studio
+```
+
+### Schema
+
+Edit `prisma/schema.prisma` to modify your database schema, then run:
+```bash
+npm run migrate
+```
+
+## 🧪 Testing
+
+### Unit Tests
+```bash
+npm test
+```
+
+### E2E Tests
+```bash
+npm run test:e2e
+```
+
+### Coverage Report
+```bash
+npm run test:cov
+```
+
+## 🔒 Security Features
+
+- **Helmet**: Secure HTTP headers
+- **CORS**: Configurable cross-origin resource sharing
+- **Rate Limiting**: Throttle requests to prevent abuse
+- **Password Hashing**: bcrypt with salt rounds
+- **JWT**: Secure token-based authentication
+- **Validation**: Input validation with class-validator
+
+## 📊 Logging
+
+The boilerplate uses Pino for high-performance logging:
+
+```typescript
+import { Logger } from '@nestjs/common';
+
+const logger = new Logger('MyService');
+logger.log('Info message');
+logger.error('Error message');
+logger.warn('Warning message');
+logger.debug('Debug message');
+```
+
+## 🔄 Cache
+
+Redis caching is configured and ready to use:
+
+```typescript
+import { RedisService } from '@infrastructure/cache/redis.service';
+
+constructor(private redis: RedisService) {}
+
+async example() {
+  // Set cache
+  await this.redis.set('key', 'value', 3600); // TTL in seconds
+  
+  // Get cache
+  const value = await this.redis.get('key');
+  
+  // JSON support
+  await this.redis.setJson('user:1', { name: 'John' }, 3600);
+  const user = await this.redis.getJson('user:1');
+}
+```
+
+## 📨 Message Queue
+
+RabbitMQ service is available for async messaging:
+
+```typescript
+import { RabbitMQService } from '@infrastructure/messaging/rabbitmq.service';
+
+constructor(private rabbitmq: RabbitMQService) {}
+
+async example() {
+  // Publish message
+  await this.rabbitmq.publish('queue-name', { data: 'value' });
+  
+  // Consume messages
+  await this.rabbitmq.consume('queue-name', async (message) => {
+    console.log('Received:', message);
+  });
+}
+```
+
+## 🚢 Deployment
+
+### Docker
+
+Build and push your Docker image:
+```bash
+docker build -t your-app:latest .
+docker push your-app:latest
+```
+
+### Environment Variables
+
+Ensure all required environment variables are set in production:
+- `DATABASE_URL`
+- `JWT_SECRET`
+- `JWT_REFRESH_SECRET`
+- `REDIS_HOST`
+- `RABBITMQ_URL`
+
+### Health Checks
+
+The services include health checks in docker-compose. Customize them as needed.
+
+## 📝 API Documentation
+
+Swagger documentation is automatically generated and available at:
+```
+http://localhost:3000/docs
+```
+
+Add API documentation to your endpoints using decorators:
+```typescript
+@ApiTags('users')
+@ApiBearerAuth()
+@ApiOperation({ summary: 'Get user profile' })
+@ApiResponse({ status: 200, description: 'User profile' })
+@Get('me')
+getProfile() {
+  // ...
+}
+```
+
+## 🎯 Best Practices
+
+1. **Module Organization**: Group related features in modules
+2. **Dependency Injection**: Use NestJS DI system
+3. **DTOs**: Use Data Transfer Objects for validation
+4. **Error Handling**: Use NestJS exception filters
+5. **Logging**: Log important events and errors
+6. **Testing**: Write tests for critical paths
+7. **Security**: Never commit secrets, use environment variables
+8. **Code Quality**: Use ESLint and Prettier
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch: `git checkout -b feature/my-feature`
+3. Commit changes: `git commit -am 'Add my feature'`
+4. Push to branch: `git push origin feature/my-feature`
+5. Submit a pull request
+
+## 📄 License
+
+MIT
+
+## 🙋 Support
+
+For issues and questions, please open an issue in the repository.
+
+---
+
+**Happy coding! 🎉**
