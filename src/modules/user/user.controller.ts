@@ -8,6 +8,7 @@ import {
   Delete,
   UseGuards,
   Request,
+  Headers,
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
 
@@ -20,13 +21,12 @@ import { Roles } from '@modules/auth/decorators/roles.decorator';
 
 @ApiTags('users')
 @Controller('users')
-@UseGuards(JwtAuthGuard)
 @ApiBearerAuth()
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
   @Post()
-  @UseGuards(RolesGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('ADMIN')
   @ApiOperation({ summary: 'Create a new user (Admin only)' })
   @ApiResponse({ status: 201, description: 'User created successfully' })
@@ -36,7 +36,7 @@ export class UserController {
   }
 
   @Get()
-  @UseGuards(RolesGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('ADMIN')
   @ApiOperation({ summary: 'Get all users (Admin only)' })
   @ApiResponse({ status: 200, description: 'Return all users' })
@@ -45,13 +45,36 @@ export class UserController {
   }
 
   @Get('me')
+  @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: 'Get current user profile' })
   @ApiResponse({ status: 200, description: 'Return current user' })
   getProfile(@Request() req) {
     return this.userService.findOne(req.user.id);
   }
 
+  // SAP Mock Integration: List users from SAP
+  @Get('sap')
+  @UseGuards(JwtAuthGuard)
+  @ApiOperation({ summary: 'List users from SAP (Mock Integration)' })
+  @ApiResponse({ status: 200, description: 'Returns a mocked list of users from SAP' })
+  @ApiResponse({ status: 500, description: 'Internal Server Error (SAP integration failed)' })
+  findAllFromSap(@Headers('x-sap-key') sapKey: string) {
+    return this.userService.findAllFromSap(sapKey);
+  }
+
+  // SAP Mock Integration: Get SAP info for a specific user
+  @Get(':id/sap-info')
+  @UseGuards(JwtAuthGuard)
+  @ApiOperation({ summary: 'Get user SAP info by ID (Mock Integration)' })
+  @ApiResponse({ status: 200, description: 'Returns mocked user data from SAP' })
+  @ApiResponse({ status: 404, description: 'User not found in SAP system' })
+  @ApiResponse({ status: 500, description: 'Internal Server Error (SAP integration failed)' })
+  findOneFromSap(@Param('id') id: string, @Headers('x-sap-key') sapKey: string) {
+    return this.userService.findOneFromSap(id, sapKey);
+  }
+
   @Get(':id')
+  @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: 'Get user by ID' })
   @ApiResponse({ status: 200, description: 'Return user' })
   @ApiResponse({ status: 404, description: 'User not found' })
@@ -60,6 +83,7 @@ export class UserController {
   }
 
   @Patch(':id')
+  @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: 'Update user' })
   @ApiResponse({ status: 200, description: 'User updated successfully' })
   @ApiResponse({ status: 404, description: 'User not found' })
@@ -68,7 +92,7 @@ export class UserController {
   }
 
   @Delete(':id')
-  @UseGuards(RolesGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('ADMIN')
   @ApiOperation({ summary: 'Delete user (Admin only)' })
   @ApiResponse({ status: 200, description: 'User deleted successfully' })

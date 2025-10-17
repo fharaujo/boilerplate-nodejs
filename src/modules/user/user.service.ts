@@ -3,18 +3,24 @@ import {
   ConflictException,
   NotFoundException,
   Logger,
+  InternalServerErrorException,
+  UnauthorizedException,
 } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 
 import { PrismaService } from '@infrastructure/database/prisma.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { SapService, UserData } from '../../sap/sap.service';
 
 @Injectable()
 export class UserService {
   private readonly logger = new Logger(UserService.name);
 
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private readonly sapService: SapService,
+  ) {}
 
   async create(createUserDto: CreateUserDto) {
     const existingUser = await this.prisma.user.findUnique({
@@ -107,5 +113,37 @@ export class UserService {
     this.logger.log(`Deleted user: ${id}`);
 
     return { message: 'User deleted successfully' };
+  }
+
+  private generateRequestId(): string {
+    return `req_${Math.random().toString(36).slice(2, 10)}_${Date.now().toString(36)}`;
+  }
+
+  async findOneFromSap(userId: string, sapKey: string): Promise<UserData> {
+    const requestId = this.generateRequestId();
+    try {
+      if (!sapKey) {
+        throw new UnauthorizedException('Missing SAP key header');
+      }
+      return await this.sapService.consultUserData(sapKey, requestId, userId);
+    } catch (err: any) {
+      const message = err?.message || '';
+      if (message.includes('User not found')) {
+        throw new NotFoundException('User not found');
+      }
+      throw new InternalServerErrorException(`SAP integration failed. RequestId=${requestId}`);
+    }
+  }
+
+  async findAllFromSap(sapKey: string): Promise<UserData[]> {
+    const requestId = this.generateRequestId();
+    try {
+      if (!sapKey) {
+        throw new UnauthorizedException('Missing SAP key header');
+      }
+      return await this.sapService.consultAllUsers(sapKey, requestId);
+    } catch (err: any) {
+      throw new InternalServerErrorException(`SAP integration failed. RequestId=${requestId}`);
+    }
   }
 }
