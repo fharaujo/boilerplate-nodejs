@@ -11,6 +11,7 @@ Modern, production-ready NestJS boilerplate with clean architecture, TypeScript,
 - **Caching**: Redis integration with ioredis
 - **Message Queue**: RabbitMQ support
 - **API Documentation**: Swagger/OpenAPI
+- **SAP Simulation**: Mock SAP service for user data lookup
 - **Security**: Helmet, CORS, Rate Limiting
 - **Validation**: class-validator for request validation
 - **Logging**: Pino logger with pretty printing
@@ -59,28 +60,34 @@ src/
 ### Local Development
 
 1. **Clone the repository**
+
    ```bash
    git clone git@gitlab.com:boilerplate-mfalzetta/boilerplate-nodejs.git
    cd boilerplate
    ```
 
 2. **Install dependencies**
+
    ```bash
    npm install
    ```
 
 3. **Setup environment variables**
+
    ```bash
    cp .env.example .env
    ```
+
    Edit `.env` with your configuration.
 
 4. **Start infrastructure services**
+
    ```bash
    docker-compose up -d postgres redis rabbitmq
    ```
 
 5. **Run database migrations**
+
    ```bash
    npm run migrate
    ```
@@ -96,11 +103,13 @@ Swagger documentation at `http://localhost:3000/docs`
 ### Using Docker Compose
 
 1. **Start all services**
+
    ```bash
    docker-compose up -d
    ```
 
 2. **View logs**
+
    ```bash
    docker-compose logs -f app
    ```
@@ -112,26 +121,27 @@ Swagger documentation at `http://localhost:3000/docs`
 
 ## 📜 Available Scripts
 
-| Script | Description |
-|--------|-------------|
-| `npm run dev` | Start development server with hot reload |
-| `npm run build` | Build production bundle |
-| `npm start` | Start production server |
-| `npm run lint` | Run ESLint |
-| `npm run format` | Format code with Prettier |
-| `npm test` | Run unit tests |
-| `npm run test:watch` | Run tests in watch mode |
-| `npm run test:cov` | Run tests with coverage |
-| `npm run test:e2e` | Run e2e tests |
-| `npm run migrate` | Run database migrations |
-| `npm run migrate:deploy` | Deploy migrations (production) |
-| `npm run prisma:studio` | Open Prisma Studio |
+| Script                   | Description                              |
+| ------------------------ | ---------------------------------------- |
+| `npm run dev`            | Start development server with hot reload |
+| `npm run build`          | Build production bundle                  |
+| `npm start`              | Start production server                  |
+| `npm run lint`           | Run ESLint                               |
+| `npm run format`         | Format code with Prettier                |
+| `npm test`               | Run unit tests                           |
+| `npm run test:watch`     | Run tests in watch mode                  |
+| `npm run test:cov`       | Run tests with coverage                  |
+| `npm run test:e2e`       | Run e2e tests                            |
+| `npm run migrate`        | Run database migrations                  |
+| `npm run migrate:deploy` | Deploy migrations (production)           |
+| `npm run prisma:studio`  | Open Prisma Studio                       |
 
 ## 🔐 Authentication
 
 The boilerplate includes a complete JWT authentication system with refresh tokens.
 
 ### Register a new user
+
 ```bash
 POST /api/v1/auth/register
 Content-Type: application/json
@@ -143,7 +153,44 @@ Content-Type: application/json
 }
 ```
 
+## 🧩 SAP Simulation
+
+Programmatic SAP simulation for user data lookups via `SapService` in `src/sap/sap.service.ts`.
+
+- **Module**: `SapModule` (`src/sap/sap.module.ts`)
+- **Service**: `SapService`
+- **Methods**:
+  - `consultUserData(sapKey: string, requestId: string, userId: string)` → `{ nome, email }`
+  - `consultAllUsers(sapKey: string, requestId: string)` → `Array<{ nome, email }>`
+- **Notes**:
+  - Uses `PrismaService` to fetch users and adapts the shape to SAP-style fields.
+  - Simulates API key validation with a static key: `API_KEY_SECRETA_SAP_12345`.
+  - Logs basic trace information with `requestId`.
+
+### Usage example
+
+```typescript
+import { Injectable } from '@nestjs/common';
+import { SapService } from '@sap/sap.service';
+
+@Injectable()
+export class ExampleService {
+  constructor(private readonly sap: SapService) {}
+
+  async example() {
+    const sapKey = 'API_KEY_SECRETA_SAP_12345';
+    const requestId = 'req-123';
+
+    const single = await this.sap.consultUserData(sapKey, requestId, 'user-uuid');
+    const all = await this.sap.consultAllUsers(sapKey, requestId);
+
+    return { single, all };
+  }
+}
+```
+
 ### Login
+
 ```bash
 POST /api/v1/auth/login
 Content-Type: application/json
@@ -155,6 +202,7 @@ Content-Type: application/json
 ```
 
 Response:
+
 ```json
 {
   "statusCode": 200,
@@ -172,6 +220,7 @@ Response:
 ```
 
 ### Refresh tokens
+
 ```bash
 POST /api/v1/auth/refresh
 Content-Type: application/json
@@ -182,7 +231,9 @@ Content-Type: application/json
 ```
 
 ### Protected routes
+
 Add the `Authorization` header with the access token:
+
 ```bash
 GET /api/v1/users/me
 Authorization: Bearer your-access-token
@@ -209,6 +260,7 @@ npm run prisma:studio
 ### Schema
 
 Edit `prisma/schema.prisma` to modify your database schema, then run:
+
 ```bash
 npm run migrate
 ```
@@ -216,16 +268,19 @@ npm run migrate
 ## 🧪 Testing
 
 ### Unit Tests
+
 ```bash
 npm test
 ```
 
 ### E2E Tests
+
 ```bash
 npm run test:e2e
 ```
 
 ### Coverage Report
+
 ```bash
 npm run test:cov
 ```
@@ -265,10 +320,10 @@ constructor(private redis: RedisService) {}
 async example() {
   // Set cache
   await this.redis.set('key', 'value', 3600); // TTL in seconds
-  
+
   // Get cache
   const value = await this.redis.get('key');
-  
+
   // JSON support
   await this.redis.setJson('user:1', { name: 'John' }, 3600);
   const user = await this.redis.getJson('user:1');
@@ -287,7 +342,7 @@ constructor(private rabbitmq: RabbitMQService) {}
 async example() {
   // Publish message
   await this.rabbitmq.publish('queue-name', { data: 'value' });
-  
+
   // Consume messages
   await this.rabbitmq.consume('queue-name', async (message) => {
     console.log('Received:', message);
@@ -300,6 +355,7 @@ async example() {
 ### Docker
 
 Build and push your Docker image:
+
 ```bash
 docker build -t your-app:latest .
 docker push your-app:latest
@@ -308,6 +364,7 @@ docker push your-app:latest
 ### Environment Variables
 
 Ensure all required environment variables are set in production:
+
 - `DATABASE_URL`
 - `JWT_SECRET`
 - `JWT_REFRESH_SECRET`
@@ -321,11 +378,13 @@ The services include health checks in docker-compose. Customize them as needed.
 ## 📝 API Documentation
 
 Swagger documentation is automatically generated and available at:
+
 ```
 http://localhost:3000/docs
 ```
 
 Add API documentation to your endpoints using decorators:
+
 ```typescript
 @ApiTags('users')
 @ApiBearerAuth()

@@ -5,9 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.0] - 2025-10-17
+
+### Added
+
+- SAP simulation for user data lookups via `SapService` and `SapModule`.
+- Methods: `consultUserData(sapKey, requestId, userId)` and `consultAllUsers(sapKey, requestId)` with API key validation and basic tracing.
+- Documentation in `README.md` including usage example and notes about the static API key.
+
 ## [1.0.0] - 2024-01-XX
 
 ### Added
+
 - Initial project setup with NestJS
 - TypeScript configuration with path aliases
 - Prisma ORM with PostgreSQL
@@ -26,6 +35,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Comprehensive README and documentation
 
 ### Security
+
 - bcrypt password hashing
 - JWT token authentication
 - Helmet for secure headers
