@@ -11,7 +11,7 @@ Modern, production-ready NestJS boilerplate with clean architecture, TypeScript,
 - **Caching**: Redis integration with ioredis
 - **Message Queue**: RabbitMQ support
 - **API Documentation**: Swagger/OpenAPI
-- **SAP Simulation**: Mock SAP service for user data lookup
+- **External News Integration**: NewsAPI sources endpoint protected by JWT
 - **Security**: Helmet, CORS, Rate Limiting
 - **Validation**: class-validator for request validation
 - **Logging**: Pino logger with pretty printing
@@ -153,40 +153,23 @@ Content-Type: application/json
 }
 ```
 
-## 🧩 SAP Simulation
+## 📰 News Module
 
-Programmatic SAP simulation for user data lookups via `SapService` in `src/sap/sap.service.ts`.
+JWT-protected integration with NewsAPI to list news sources.
 
-- **Module**: `SapModule` (`src/sap/sap.module.ts`)
-- **Service**: `SapService`
-- **Methods**:
-  - `consultUserData(sapKey: string, requestId: string, userId: string)` → `{ nome, email }`
-  - `consultAllUsers(sapKey: string, requestId: string)` → `Array<{ nome, email }>`
-- **Notes**:
-  - Uses `PrismaService` to fetch users and adapts the shape to SAP-style fields.
-  - Simulates API key validation with a static key: `API_KEY_SECRETA_SAP_12345`.
-  - Logs basic trace information with `requestId`.
+- **Endpoint**: `GET /api/v1/news/sources`
+- **Auth**: Requires `Authorization: Bearer <access-token>` (uses `JwtAuthGuard`)
+- **Configuration**: Requires `NEWS_API_KEY` in environment
+- **Implementation**:
+  - Service: `src/modules/news/news.service.ts`
+  - Controller: `src/modules/news/news.controller.ts`
+  - Types: `src/modules/news/types/news.types.ts`
 
-### Usage example
+Example request:
 
-```typescript
-import { Injectable } from '@nestjs/common';
-import { SapService } from '@sap/sap.service';
-
-@Injectable()
-export class ExampleService {
-  constructor(private readonly sap: SapService) {}
-
-  async example() {
-    const sapKey = 'API_KEY_SECRETA_SAP_12345';
-    const requestId = 'req-123';
-
-    const single = await this.sap.consultUserData(sapKey, requestId, 'user-uuid');
-    const all = await this.sap.consultAllUsers(sapKey, requestId);
-
-    return { single, all };
-  }
-}
+```bash
+curl -H "Authorization: Bearer <access-token>" \
+  http://localhost:3000/api/v1/news/sources
 ```
 
 ### Login
@@ -370,6 +353,7 @@ Ensure all required environment variables are set in production:
 - `JWT_REFRESH_SECRET`
 - `REDIS_HOST`
 - `RABBITMQ_URL`
+- `NEWS_API_KEY`
 
 ### Health Checks
 
