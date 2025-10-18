@@ -6,7 +6,6 @@ import { CreateUserDto } from './dto/create-user.dto';
 
 describe('UserService', () => {
   let service: UserService;
-  let prisma: PrismaService;
 
   const mockPrismaService = {
     user: {
@@ -30,7 +29,6 @@ describe('UserService', () => {
     }).compile();
 
     service = module.get<UserService>(UserService);
-    prisma = module.get<PrismaService>(PrismaService);
   });
 
   afterEach(() => {

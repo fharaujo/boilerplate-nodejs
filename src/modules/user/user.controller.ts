@@ -8,7 +8,6 @@ import {
   Delete,
   UseGuards,
   Request,
-  Headers,
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
 
@@ -50,27 +49,6 @@ export class UserController {
   @ApiResponse({ status: 200, description: 'Return current user' })
   getProfile(@Request() req) {
     return this.userService.findOne(req.user.id);
-  }
-
-  // SAP Mock Integration: List users from SAP
-  @Get('sap')
-  @UseGuards(JwtAuthGuard)
-  @ApiOperation({ summary: 'List users from SAP (Mock Integration)' })
-  @ApiResponse({ status: 200, description: 'Returns a mocked list of users from SAP' })
-  @ApiResponse({ status: 500, description: 'Internal Server Error (SAP integration failed)' })
-  findAllFromSap(@Headers('x-sap-key') sapKey: string) {
-    return this.userService.findAllFromSap(sapKey);
-  }
-
-  // SAP Mock Integration: Get SAP info for a specific user
-  @Get(':id/sap-info')
-  @UseGuards(JwtAuthGuard)
-  @ApiOperation({ summary: 'Get user SAP info by ID (Mock Integration)' })
-  @ApiResponse({ status: 200, description: 'Returns mocked user data from SAP' })
-  @ApiResponse({ status: 404, description: 'User not found in SAP system' })
-  @ApiResponse({ status: 500, description: 'Internal Server Error (SAP integration failed)' })
-  findOneFromSap(@Param('id') id: string, @Headers('x-sap-key') sapKey: string) {
-    return this.userService.findOneFromSap(id, sapKey);
   }
 
   @Get(':id')

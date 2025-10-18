@@ -7,6 +7,7 @@ import { CoreModule } from '@core/core.module';
 import { InfrastructureModule } from '@infrastructure/infrastructure.module';
 import { AuthModule } from '@modules/auth/auth.module';
 import { UserModule } from '@modules/user/user.module';
+import { NewsModule } from '@modules/news/news.module';
 
 @Module({
   imports: [
@@ -56,6 +57,7 @@ import { UserModule } from '@modules/user/user.module';
     InfrastructureModule,
     AuthModule,
     UserModule,
+    NewsModule,
   ],
 })
 export class AppModule {}
